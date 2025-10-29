@@ -89,11 +89,20 @@ void	load_multiple_images(t_data *texture, char *path, int x, int y, int quantit
 void	set_difficulty(void)
 {
 	if (game()->frame.diff_tg == 0)
+	{
+		game()->time = 180;
 		game()->glitch.spread_delay = 4;
+	}
 	else if (game()->frame.diff_tg == 1)
+	{
+		game()->time = 120;
 		game()->glitch.spread_delay = 2;
+	}
 	else if (game()->frame.diff_tg == 2)
+	{
+		game()->time = 60;
 		game()->glitch.spread_delay = 1;
+	}
 }
 void	reinit(void)
 {

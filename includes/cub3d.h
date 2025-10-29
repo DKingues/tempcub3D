@@ -139,7 +139,7 @@ typedef struct s_game
 	int 		release;
 	void		*mlx;
 	void		*win;
-	
+	int			time;
 	t_glitch	glitch;
 	t_frame		frame;
 	t_state		state;
@@ -226,7 +226,8 @@ int	map_colors(void);
 int texture_img(char *av);
 
 // glitch.c
-void glitch_consume(int spawn_delay);
+int		calculate_time(void);
+void	glitch_consume(int spawn_delay);
 
 //mem_utils.c
 void	freeandcopy(int pos, char *line);

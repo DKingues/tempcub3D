@@ -55,7 +55,7 @@ void	game_loop(float change)
 {
 	// if (game_over_check() == 0)
 	// {
-		timer(game()->game_start, 310);
+		timer(game()->game_start, game()->time);
 		glitch_consume(2);
 		if (game()->player.diff == 1)
 		change = 0.1;

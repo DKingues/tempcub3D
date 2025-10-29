@@ -16,7 +16,28 @@ long	get_time(void)
 		return (0);
 	return (tv.tv_sec * (long)1e3 + (tv.tv_usec / 1e3));
 }
+int	calculate_time(void)
+{
+	int	blocks_to_glitch;
+	int y;
+	int x;
 
+	blocks_to_glitch = 0;
+	y = 0;
+	x = 0;
+	while (game()->map.map[y])
+	{
+		x = 0;
+		while (game()->map.map[y][x])
+		{
+			if (game()->map.map[y][x] == '0' || game()->map.map[y][x] == 'O' || game()->map.map[y][x] == 'C')
+				blocks_to_glitch++;
+			x++;
+		}
+		y++;
+	}
+	return (game()->glitch.spread_delay * blocks_to_glitch);
+}
 static void spawn_glitch(int spawn_delay)
 {
 	long now;
