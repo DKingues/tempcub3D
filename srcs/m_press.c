@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   m_press.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmota-ma <rmota-ma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 17:43:00 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/10/23 15:27:36 by rmota-ma         ###   ########.fr       */
+/*   Updated: 2025/10/30 23:06:55 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ void	main_press(void)
 		mlx_mouse_get_pos(game()->mlx, game()->win, &game()->mouse.x, &game()->mouse.y);
 		mlx_mouse_move(game()->mlx, game()->win, game()->mouse.x, 1070);
 		mx = game()->mouse.x;
+		set_difficulty();
 		game_move(&mx);
 		darken(game()->st_anim[game()->frame.anim_tg], 1.0, -0.05);
 		game()->frame.play_tg = 0;

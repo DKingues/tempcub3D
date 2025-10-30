@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 16:10:20 by dicosta-          #+#    #+#             */
-/*   Updated: 2025/10/30 18:52:55 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/10/30 23:11:57 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ int	tt_glitch_map(void)
 	temp_map2 = NULL;
 	temp_map2 = copy_map(temp_map2, game()->map.map);
 	temp_map2[(int)game()->player.start_y][(int)game()->player.start_x] = 'G';
+	game()->glitch.glitch_i = 0;
 	while (count_zero(temp_map2) > 0)
 	{
 		temp_map = copy_map(temp_map, temp_map2);

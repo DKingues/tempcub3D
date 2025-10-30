@@ -317,5 +317,6 @@ int		count_zero(char **map);
 
 void	glitch_consume(int spawn_delay);
 char	**copy_map(char **new_map, char **map_to_copy);
+void	set_difficulty(void);
 
 # endif
