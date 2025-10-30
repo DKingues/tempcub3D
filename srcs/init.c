@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmota-ma <rmota-ma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:20:42 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/10/23 15:24:10 by rmota-ma         ###   ########.fr       */
+/*   Updated: 2025/10/30 18:45:47 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,20 +89,12 @@ void	load_multiple_images(t_data *texture, char *path, int x, int y, int quantit
 void	set_difficulty(void)
 {
 	if (game()->frame.diff_tg == 0)
-	{
-		game()->time = 180;
 		game()->glitch.spread_delay = 4;
-	}
 	else if (game()->frame.diff_tg == 1)
-	{
-		game()->time = 120;
 		game()->glitch.spread_delay = 2;
-	}
 	else if (game()->frame.diff_tg == 2)
-	{
-		game()->time = 60;
 		game()->glitch.spread_delay = 1;
-	}
+	game()->time = glitch_iter();
 }
 void	reinit(void)
 {
@@ -226,6 +218,7 @@ void init(void)
 	game()->release = 0;
 
 	game()->glitch.glitch_spawned = 0;
+	game()->glitch.tt_glitch_map = 0;
 
 	init_vid();
 	game()->state = MENU;

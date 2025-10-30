@@ -1,43 +1,5 @@
 #include "../includes/cub3d.h"
 
-long get_elapsed_sec(void)
-{
-	struct timeval current;
-
-	gettimeofday(&current, NULL);
-	return (current.tv_sec - game()->game_start);
-}
-
-long	get_time(void)
-{
-	struct timeval	tv;
-
-	if (gettimeofday(&tv, NULL))
-		return (0);
-	return (tv.tv_sec * (long)1e3 + (tv.tv_usec / 1e3));
-}
-int	calculate_time(void)
-{
-	int	blocks_to_glitch;
-	int y;
-	int x;
-
-	blocks_to_glitch = 0;
-	y = 0;
-	x = 0;
-	while (game()->map.map[y])
-	{
-		x = 0;
-		while (game()->map.map[y][x])
-		{
-			if (game()->map.map[y][x] == '0' || game()->map.map[y][x] == 'O' || game()->map.map[y][x] == 'C')
-				blocks_to_glitch++;
-			x++;
-		}
-		y++;
-	}
-	return (game()->glitch.spread_delay * blocks_to_glitch);
-}
 static void spawn_glitch(int spawn_delay)
 {
 	long now;
@@ -118,39 +80,49 @@ void glitch_consume(int spawn_delay)
 	}
 }
 
+int	glitch_iter(void)
+{
+	int	x;
+	int	y;
+	char	**temp_map;
+	char	**temp_map2;
 
-	// if ((now_s - spawn_delay) - last_print_time == spread_delay)
-	// {
-	// 	while (game()->map.map[y])
-	// 	{
-	// 		x = 0;
-	// 		while (game()->map.map[y][x] )
-	// 		{
-	// 			if (game()->map.map[y][x] == 'G')
-	// 			{
-	// 				if (game()->map.map[y][x + 1] != '1')
-	// 				{
-	// 					game()->map.map[y][x + 1] = 'G';
-	// 					last_print_time = get_elapsed_sec();
-	// 				}
-	// 				if (game()->map.map[y][x - 1] != '1')
-	// 				{
-	// 					game()->map.map[y][x - 1] = 'G';
-	// 					last_print_time = get_elapsed_sec();
-	// 				}
-	// 				if (game()->map.map[y + 1][x] != '1')
-	// 				{
-	// 					game()->map.map[y + 1][x] = 'G';
-	// 					last_print_time = get_elapsed_sec();
-	// 				}
-	// 				if (game()->map.map[y - 1][x] != '1')
-	// 				{
-	// 					game()->map.map[y - 1][x] = 'G';
-	// 					last_print_time = get_elapsed_sec();
-	// 				}
-	// 			}
-	// 				x++;
-	// 		}
-	// 		y++;
-	// 	}
-	// }
+	x = 0;
+	y = 0;
+	temp_map = NULL;
+	temp_map2 = NULL;
+	temp_map2 = copy_map(temp_map2, game()->map.map);
+	temp_map2[(int)game()->player.start_y][(int)game()->player.start_x] = 'G';
+	while (count_zero(temp_map2) > 0)
+	{
+		temp_map = copy_map(temp_map, temp_map2);
+		y = 0;
+		while (temp_map2[y])
+		{
+			x = 0;
+			while (temp_map2[y][x])
+			{
+				if (temp_map2[y][x] == 'G')
+				{
+					if (temp_map2[y][x - 1] != '1' && temp_map2[y][x - 1] != 'G')
+						temp_map[y][x - 1] = 'G';
+					if (temp_map2[y - 1][x] != '1' && temp_map2[y - 1][x] != 'G')
+						temp_map[y - 1][x] = 'G';
+					if (temp_map2[y + 1][x] != '1' && temp_map2[y + 1][x] != 'G')
+						temp_map[y + 1][x] = 'G';
+					if (temp_map2[y][x + 1] != '1' && temp_map2[y][x + 1] != 'G')
+						temp_map[y][x + 1] = 'G';
+				}
+				x++;
+			}
+			y++;
+		}
+		game()->glitch.tt_glitch_map++;
+		temp_map2 = copy_map(temp_map2, temp_map);
+	}
+	if (temp_map)
+		ft_free(temp_map);
+	if (temp_map2)
+		ft_free(temp_map2);
+	return (game()->glitch.tt_glitch_map * game()->glitch.spread_delay);
+}

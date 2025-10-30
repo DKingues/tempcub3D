@@ -125,7 +125,7 @@ typedef	struct	s_glitch
 	t_data 	glitch[10];
 	int		glitch_spawned;
 	long	last_glitch_time;
-	int		tiles_to_glitch;
+	int		tt_glitch_map;
 	int		spread_delay;
 
 }				t_glitch;
@@ -209,7 +209,7 @@ t_game	*game(void);
 void	reinit(void);
 
 //parsing.c
-int parsing(char **av);
+int	 parsing(char **av);
 int map_exists(char *av);
 int map_name(char *av);
 void	rewrite_map(void);
@@ -224,10 +224,6 @@ int	map_chars(char *av);
 int	map_textures(void);
 int	map_colors(void);
 int texture_img(char *av);
-
-// glitch.c
-int		calculate_time(void);
-void	glitch_consume(int spawn_delay);
 
 //mem_utils.c
 void	freeandcopy(int pos, char *line);
@@ -309,4 +305,14 @@ void	draw_dim_img(t_data *src, t_data *dst, int x, int y, float factor);
 void	darken(t_data src, float st_factor, float max_factor);
 void	lighten(t_data src, float st_factor);
 
+// time.c
+
+long 	get_elapsed_sec(void);
+long	get_time(void);
+int		count_zero(char **map);
+
+// glitch.c
+
+void	glitch_consume(int spawn_delay);
+int		glitch_iter(void);
 # endif
