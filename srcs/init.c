@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:20:42 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/10/30 18:45:47 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/10/30 21:29:25 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	set_difficulty(void)
 		game()->glitch.spread_delay = 2;
 	else if (game()->frame.diff_tg == 2)
 		game()->glitch.spread_delay = 1;
-	game()->time = glitch_iter();
+	game()->time = tt_glitch_map();
 }
 void	reinit(void)
 {
@@ -179,6 +179,7 @@ void init(void)
 	load_full_img(&game()->timer, "textures/hud.xpm", 1920, 1080);
 	load_multiple_images(game()->glitch.glitch, "textures/glitch64/Glitch", 64, 64, 10);
 	load_multiple_images(game()->timer_nbr, "textures/numbers/", 31, 31, 10);
+	load_multiple_images(game()->stamina_bar, "textures/stamina/", 390, 19, 26);
 	game()->sleft_c[0].x = 1004;
 	game()->sleft_c[0].y = 501.5;
 	game()->sright_c[0].x = 1383; 
@@ -218,7 +219,7 @@ void init(void)
 	game()->release = 0;
 
 	game()->glitch.glitch_spawned = 0;
-	game()->glitch.tt_glitch_map = 0;
+	game()->glitch.glitch_i = 0;
 
 	init_vid();
 	game()->state = MENU;

@@ -125,7 +125,7 @@ typedef	struct	s_glitch
 	t_data 	glitch[10];
 	int		glitch_spawned;
 	long	last_glitch_time;
-	int		tt_glitch_map;
+	int		glitch_i;
 	int		spread_delay;
 
 }				t_glitch;
@@ -150,6 +150,7 @@ typedef struct s_game
 	t_data		open_door;
 	t_data		timer;
 	t_data		timer_nbr[10];
+	t_data		stamina_bar[26];
 	t_data		person;
 	t_data		pause_bt;
 	t_data		return_menu_bt[2];
@@ -309,10 +310,12 @@ void	lighten(t_data src, float st_factor);
 
 long 	get_elapsed_sec(void);
 long	get_time(void);
+int		tt_glitch_map(void);
 int		count_zero(char **map);
 
 // glitch.c
 
 void	glitch_consume(int spawn_delay);
-int		glitch_iter(void);
+char	**copy_map(char **new_map, char **map_to_copy);
+
 # endif
