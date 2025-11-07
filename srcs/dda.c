@@ -6,13 +6,13 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 16:06:18 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/10/17 16:06:38 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/11/06 18:21:14 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
 
-void dda_test(double rayDirX, double rayDirY)
+void dda_test(double rayDirX, double rayDirY, int drawX)
 {
     double posX = game()->player.player_x, posY = game()->player.player_y;
 
@@ -39,7 +39,6 @@ void dda_test(double rayDirX, double rayDirY)
         stepY = 1;
         sideDistY = (mapY + 1.0 - posY) * deltaDistY;
     }
-
     int hit = 0;
     int side;
     while (!hit) {
@@ -52,7 +51,7 @@ void dda_test(double rayDirX, double rayDirY)
             mapY += stepY;
             side = 1;
         }
-        if (game()->map.map[mapY][mapX] == '1' || game()->map.map[mapY][mapX] == 'C')
+        if (game()->map.map[mapY][mapX] == '1' || game()->map.map[mapY][mapX] == 'C' || game()->map.map[mapY][mapX] == 'G' || game()->map.map[mapY][mapX] == 'L')
             hit = 1;
     }
     double perpWallDist;
@@ -60,26 +59,74 @@ void dda_test(double rayDirX, double rayDirY)
         perpWallDist = (mapX - posX + (1 - stepX) / 2.0) / rayDirX;
     else
         perpWallDist = (mapY - posY + (1 - stepY) / 2.0) / rayDirY;
-    double hitX = posX + rayDirX * perpWallDist;
-    double hitY = posY + rayDirY * perpWallDist;
-    draw_line(posX * 64, posY * 64, hitX * 64, hitY * 64);
+    double hitX;
+    t_data tex_clr;
+    if (side == 0)
+	{
+		if (rayDirX > 0)
+			tex_clr = game()->map.east;
+		else
+			tex_clr = game()->map.west;
+	}
+	else
+	{
+		if (rayDirY > 0)
+			tex_clr = game()->map.north;
+		else
+			tex_clr = game()->map.south;
+	}
+	if(game()->map.map[mapY][mapX] == 'C')
+		tex_clr = game()->door[0];
+	if(game()->map.map[mapY][mapX] == 'O')
+		tex_clr = game()->door[56];
+	if(game()->map.map[mapY][mapX] == 'G')
+		tex_clr = game()->glitch.glitch[game()->frame.glitch_tg];
+	if(game()->map.map[mapY][mapX] == 'L')
+		tex_clr = game()->exit;
+    if(side == 0)
+        hitX = posY + rayDirY * perpWallDist;
+    else
+         hitX = posX + rayDirX * perpWallDist;
+    //draw_line(rayDirX, rayDirY);
+    hitX -= floor(hitX);
+    int lineHeight = (int)(1080 / perpWallDist);
+    int drawStart = -lineHeight / 2 + 1080 / 2;
+    if(drawStart < 0)
+        drawStart = 0;
+    int drawEnd = lineHeight / 2 + 1080 / 2;
+    if(drawEnd >= 1080)
+        drawEnd = 1080 - 1;
+    int texX = (int)(hitX * tex_clr.res_x);
+    if(side == 0 && rayDirX < 0) 
+        texX = tex_clr.res_x - texX - 1;
+    if(side == 1 && rayDirY > 0)
+        texX = tex_clr.res_x - texX - 1;
+    while(drawStart <= drawEnd)
+    {
+        int texY = drawStart * 256 - 1080 * 128 + lineHeight * 128;
+	    int texYY =  (((texY * tex_clr.res_y) / lineHeight) / 256);
+        if(texYY >= 1080)
+            texYY = 1080 - 1;
+        my_mlx_pixel_put2(&game()->canvas, drawX, drawStart, my_mlx_pixel_get(&tex_clr, texX, texYY));
+        drawStart++;
+    }
+    //draw_line(posX * 64, posY * 64, hitX * 64, hitY * 64);
 }
 
 void dda_fov(void)
 {
     double dirX = game()->raycast.ray_x;
     double dirY = game()->raycast.ray_y;
-
     double planeX = game()->raycast.plane_x;
     double planeY = game()->raycast.plane_y;
-
-    for (int i = 0; i < 100; i++)
+    int i = 0;
+    while (i < 1920)
     {
-        double cameraX = 2 * i / (double)(100 - 1) - 1;
+        double cameraX = 2 * i / (double)(1920 - 1) - 1;
         double rayDirX = dirX + planeX * cameraX;
         double rayDirY = dirY + planeY * cameraX;
-
-        dda_test(rayDirX, rayDirY);
+        dda_test(rayDirX, rayDirY, i);
+        i++;
     }
 }
 
@@ -88,7 +135,7 @@ void	rotate_ray(int dir)
 {
 	double oldrayX = game()->raycast.ray_x;
     double oldPlaneX = game()->raycast.plane_x;
-    double rot = dir * 0.035;
+    double rot = dir * 0.04;
 
     game()->raycast.ray_x = game()->raycast.ray_x * cos(rot) - game()->raycast.ray_y * sin(rot);
     game()->raycast.ray_y = oldrayX * sin(rot) + game()->raycast.ray_y * cos(rot);

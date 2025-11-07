@@ -6,11 +6,19 @@
 /*   By: rmota-ma <rmota-ma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 16:06:48 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/10/22 12:55:53 by rmota-ma         ###   ########.fr       */
+/*   Updated: 2025/10/30 17:02:17 by rmota-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/cub3d.h"
+
+void	my_mlx_pixel_put2(t_data *data, int x, int y, int color)
+{
+	char	*dst;
+
+	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	*(unsigned int *)dst = color;
+}
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
@@ -30,14 +38,11 @@ int	my_mlx_pixel_get(t_data *data, int x, int y)
 	return (*(unsigned int *)dst);
 }
 
-int	my_mlx_pixel_get_dim(t_data *data, int x, int y, float factor)
+int	dim_clr(unsigned int color, float factor)
 {
-	unsigned int color;
 	unsigned char	r;
 	unsigned char	g;
 	unsigned char	b;
-	(void)factor;
-	color = my_mlx_pixel_get(data, x, y);
 	if(color == 0x66FF00)
 		return color;
 	r = (color >> 16) & 0xFF;
@@ -46,7 +51,16 @@ int	my_mlx_pixel_get_dim(t_data *data, int x, int y, float factor)
 	r = (unsigned char)(r * factor);
 	g = (unsigned char)(g * factor);
 	b = (unsigned char)(b * factor);
-	return ((r << 16) | (g << 8) | b);
+		return ((r << 16) | (g << 8) | b);
+}
+
+int	my_mlx_pixel_get_dim(t_data *data, int x, int y, float factor)
+{
+	unsigned int color;
+
+	color = my_mlx_pixel_get(data, x, y);
+	color = dim_clr(color, factor);
+	return (color);
 }
 
 t_data	load_img(char *path)
@@ -94,4 +108,30 @@ int	ft_usleep(int micro)
 		elapsed = (curr.tv_sec - start.tv_sec) * 1000000 + (curr.tv_usec - start.tv_usec);
 	}
 	return (0);
+}
+
+char *nbr_hx_clr(int nbr)
+{
+	int temp;
+	char *res;
+	int var;
+	var = 1;
+	res = ft_calloc(sizeof(char), 3);
+	while(nbr != 0)
+	{
+		temp = nbr % 16;
+		if(temp < 10)
+			temp += 48;
+		else
+			temp += 55;
+		res[var] = temp;
+		nbr = nbr / 16;
+		var--;
+	}
+	while(var >= 0)
+	{
+		res[var] = '0';
+		var--;
+	}
+	return (res);
 }

@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:24:40 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/10/17 14:41:33 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/11/07 16:07:59 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,7 @@ int	map_chars(char *av)
 	int	var;
 	int	fd;
 	char *line;
+	int check_l = 0;
 
 	var = 0;
 	fd = open(av, O_RDONLY);
@@ -228,10 +229,12 @@ int	map_chars(char *av)
 		}
 		while(line[var] && line[var] != '\n')
 		{
-			if(line[var] != '0' && line[var] != 'N' && line[var] != '1' && line[var] != 'E' && line[var] != 'S' && line[var] != 'W' && line[var] != ' ' && line[var] != 'C' &&  line[var] != 'O' && line[var] != 'G')
+			if(line[var] != '0' && line[var] != 'N' && line[var] != '1' && line[var] != 'E' && line[var] != 'S' && line[var] != 'W' && line[var] != ' ' && line[var] != 'C' &&  line[var] != 'O' && line[var] != 'L')
 				return (close(fd), printf("Invalid character '%c' inside the map.\n", line[var]), free(line),  1);
 			if (line[var] == 'N' || line[var] == 'E' || line[var] == 'S' || line[var] == 'W')
 				check++;
+			if (line[var] == 'L')
+				check_l++;
 			var++;
 		}
 		free(line);
@@ -242,5 +245,9 @@ int	map_chars(char *av)
 		return (printf("Player not found in the map.\n"), 1);
 	else if (check != 1)
 		return (printf("Too many players found in the map.\n"), 1);
+	if (!check_l)
+		return (printf("Exit not found in the map.\n"), 1);
+	else if (check_l != 1)
+		return (printf("Too many exits found in the map.\n"), 1);
 	return (0);
 }

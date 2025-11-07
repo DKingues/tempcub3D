@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 15:15:29 by dicosta-          #+#    #+#             */
-/*   Updated: 2025/10/30 16:33:26 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/11/07 17:03:41 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,15 @@ int open_door(void)
 	
 	y = game()->player.player_y;
 	x = game()->player.player_x;
-	if (game()->map.map[y][x + 1] == 'C')
+	if (game()->map.map[y][x + 1] == 'L')
+		game()->state = G_WIN;
+	else if (game()->map.map[y][x - 1] == 'L')
+		game()->state = G_WIN;
+	else if (game()->map.map[y + 1][x] == 'L')
+		game()->state = G_WIN;
+	else if (game()->map.map[y - 1][x] == 'L')
+		game()->state = G_WIN;
+	else if (game()->map.map[y][x + 1] == 'C')
 		game()->map.map[y][x + 1] = 'O';
 	else if (game()->map.map[y][x - 1] == 'C')
 		game()->map.map[y][x - 1] = 'O';
@@ -97,12 +105,12 @@ void	draw_time(void)
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 980, 23, 1.0);
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 1017, 23, 1.0);
 	}
-	// else
-	// {
-	// 	draw_img(&game()->timer_nbr[0], &game()->canvas, 875, 23, 1.0);
-	// 	draw_img(&game()->timer_nbr[0], &game()->canvas, 909, 23, 1.0);
-	// 	draw_img(&game()->timer_nbr[0], &game()->canvas, 980, 23, 1.0);
-	// 	draw_img(&game()->timer_nbr[0], &game()->canvas, 1017, 23, 1.0);
-	// }
+	else
+	{
+		draw_img(&game()->timer_nbr[0], &game()->canvas, 980, 23, 1.0);
+		draw_img(&game()->timer_nbr[0], &game()->canvas, 1017, 23, 1.0);
+		draw_img(&game()->timer_nbr[0], &game()->canvas, 875, 23, 1.0);
+		draw_img(&game()->timer_nbr[0], &game()->canvas, 909, 23, 1.0);
+	}
 }
 
