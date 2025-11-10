@@ -128,6 +128,8 @@ typedef enum s_state
 	GAME,
 	G_OVER,
 	G_WIN,
+	OPT_G,
+	CTRL_G,
 }				t_state;
 
 typedef	struct	s_glitch
@@ -162,6 +164,8 @@ typedef struct s_game
 	t_state		state;
 	t_data		g_over;
 	t_data		g_win[4];
+	t_data		star[4];
+	t_data		g_win_bg;
 	t_data		canvas;
 	t_data		wall;
 	t_data		floor;
@@ -291,14 +295,18 @@ int	dim_clr(unsigned int color, float factor);
 void gameplay(void);
 
 //m_press.c
-int	mouse_press(int keycode, void *nada);
+int		mouse_press(int keycode, void *nada);
 void	main_press(void);
 void	opt_m_press(void);
 void	ctrl_m_press(void);
 void	pause_press(void);
 void	opt_p_press(void);
 void	ctrl_p_press(void);
-int	pause_game(void);
+void	win_press(void);
+void	gover_press(void);
+int		pause_game(void);
+void	opt_g_press(void);
+void	ctrl_g_press(void);
 
 //m_move.c
 int	mouse_move(int keycode, t_game *null);
@@ -308,7 +316,12 @@ void	ctrl_m_move(void);
 void	pause_move(void);
 void	opt_p_move(void);
 void	ctrl_p_move(void);
+void	win_move(void);
+void	gover_move(void);
 void	game_move(int *last_x);
+void	opt_g_move(void);
+void	ctrl_g_move(void);
+
 
 //keys.c
 int	key_press(int keycode, t_game *nada);
@@ -326,6 +339,8 @@ void opt_p_put(void);
 void ctrl_p_put(void);
 void g_win_put(void);
 void g_over_put(void);
+void opt_g_put(void);
+void ctrl_g_put(void);
 
 //anim_utils.c
 void	draw_dim_img(t_data *src, t_data *dst, int x, int y, float factor);

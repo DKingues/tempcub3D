@@ -212,7 +212,7 @@ void init(void)
 	load_full_img(&game()->diff_bt, "textures/buttons/diff_bt.xpm");
 	load_full_img(&game()->sens_bt, "textures/buttons/sens_bt.xpm");
 	
-	load_full_img(&game()->g_over, "textures/lose/g_over.xpm");
+	load_full_img(&game()->g_over, "textures/lose/gover_bg.xpm");
 	load_full_img(&game()->diff_nb[1], "textures/buttons/diff_nb1.xpm");
 	
 	load_full_img(&game()->pause_bt, "textures/buttons/pause_bt.xpm");
@@ -222,7 +222,8 @@ void init(void)
 	load_full_img(&game()->closed_door, "textures/doorC.xpm");
 	load_full_img(&game()->open_door, "textures/doorO.xpm");
 	load_full_img(&game()->timer, "textures/neon_hud.xpm");
-	
+	load_full_img(&game()->g_win_bg, "textures/win/win_victory.xpm");
+	load_multiple_images(game()->star, "textures/stars/star", 122, 522, 4);
 	load_multiple_images(game()->return_menu_bt, "textures/buttons/return_menu_bt", 412, 79, 2);
 	load_multiple_images(game()->door, "textures/door/Porta", 432, 432, 56);
 	load_multiple_images(game()->restart_bt, "textures/buttons/restart_bt", 412, 79, 2);
