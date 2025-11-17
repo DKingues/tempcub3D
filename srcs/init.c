@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:20:42 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/11/07 18:58:00 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/11/15 18:23:10 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,15 +102,18 @@ void	load_multiple_images(t_data *texture, char *path, int x, int y, int quantit
 {
 	int i;
 	char *str;
+	char *nbr;
 	(void)x;
 	(void)y;
 	i = 0;
 	while (i < quantity)
 	{
-		str = ft_strjoin(ft_strdup(path), ft_itoa(i));
+		nbr = ft_itoa(i);
+		str = ft_strjoin(ft_strdup(path), nbr);
 		str = ft_strjoin(str, ".xpm");
 		load_full_img(&texture[i], str);
 		free(str);
+		free(nbr);
 		i++;
 	}
 }
@@ -123,13 +126,13 @@ void	set_difficulty(void)
 		game()->glitch.spread_delay = 2;
 	else if (game()->frame.diff_tg == 2)
 		game()->glitch.spread_delay = 1;
-	game()->time = tt_glitch_map();
+	game()->time.level_time = tt_glitch_map();
 }
 
 void	reinit(void)
 {
-	game()->game_over = 0;
-	game()->game_start = -1;
+	char **temp_map = NULL;
+	game()->time.level_start = -1;
 	game()->frame.return_menu_tg = 0;
 	game()->frame.restart_tg = 0;
 	game()->frame.glitch_tg = 0;
@@ -147,6 +150,7 @@ void	reinit(void)
 	game()->frame.ctrlback_tg = 0;
 	game()->frame.quit_p_tg = 0;
 	game()->frame.option_p_tg = 0;
+	game()->frame.star_tg = 0;
 	game()->player.sprint = 0;
 	game()->player.sprint_count = 100;
 	game()->player.moving_w = 0;
@@ -155,12 +159,12 @@ void	reinit(void)
 	game()->player.moving_d = 0;
 	game()->player.rot_l = 0;
 	game()->player.rot_r = 0;
+	game()->frame.door_tg = 0;
 	game()->mouse.x = 0;
 	game()->mouse.y = 0;
-	game()->minutes = 0;
-	game()->seconds = 0;
-	char **temp_map = NULL;
 	game()->glitch.to_glitch = 0;
+	game()->time.pause_time_start = -1;
+	game()->time.pause_time = 0;
 	temp_map = copy_map(temp_map, game()->map.map);
 	game()->glitch.to_glitch = count_zero_r(temp_map, (int)game()->player.start_y, (int)game()->player.start_x);
 	ft_free(temp_map);
@@ -174,7 +178,48 @@ void	reinit(void)
 	set_fov(66.0);
 	ins_map();
 }
-
+void	load_images(void)
+{
+	load_full_img(&game()->map.north, game()->map.info[0]);
+	load_full_img(&game()->map.south, game()->map.info[1]);
+	load_full_img(&game()->map.east, game()->map.info[2]);
+	load_full_img(&game()->map.west, game()->map.info[3]);
+	load_full_img(&game()->wall, "textures/1.xpm");
+	load_full_img(&game()->floor, "textures/2.xpm");
+	load_full_img(&game()->person, "textures/3.xpm");
+	load_full_img(&game()->maze_nm, "textures/buttons/maze_nm.xpm");
+	load_full_img(&game()->ctrl_menu, "textures/buttons/ctrl_menu.xpm");
+	load_full_img(&game()->diff_bt, "textures/buttons/diff_bt.xpm");
+	load_full_img(&game()->sens_bt, "textures/buttons/sens_bt.xpm");
+	load_full_img(&game()->g_over, "textures/lose/gover_bg.xpm");
+	load_full_img(&game()->g_win_bg, "textures/win/win_victory.xpm");
+	load_full_img(&game()->pause_bt, "textures/buttons/pause_bt.xpm");
+	load_full_img(&game()->exit, "textures/exit/Exit1.xpm");
+	load_full_img(&game()->closed_door, "textures/doorC.xpm");
+	load_full_img(&game()->open_door, "textures/doorO.xpm");
+	load_full_img(&game()->timer, "textures/neon_hud.xpm");
+	load_multiple_images(game()->g_win, "textures/win/win", 1920, 1080, 4);
+	load_multiple_images(game()->star, "textures/stars/star", 122, 522, 4);
+	load_multiple_images(game()->return_menu_bt, "textures/buttons/return_menu_bt", 412, 79, 2);
+	load_multiple_images(game()->door, "textures/door/Porta", 432, 432, 56);
+	load_multiple_images(game()->restart_bt, "textures/buttons/restart_bt", 412, 79, 2);
+	load_multiple_images(game()->play_bt, "textures/buttons/play_bt", 576, 116, 2);
+	load_multiple_images(game()->option_bt, "textures/buttons/option_bt", 576, 116, 2);
+	load_multiple_images(game()->quit_bt, "textures/buttons/quit_bt", 576, 116, 2);
+	load_multiple_images(game()->back_bt, "textures/buttons/back_bt", 855, 79, 2);
+	load_multiple_images(game()->ctrl_bt, "textures/buttons/ctrl_bt", 855, 80, 2);
+	load_multiple_images(game()->ctrlback_bt, "textures/buttons/ctrlback_bt", 1195, 79, 2);
+	load_multiple_images(game()->left_bt, "textures/buttons/left_bt", 30, 34, 2);
+	load_multiple_images(game()->right_bt, "textures/buttons/right_bt", 30, 34, 2);
+	load_multiple_images(game()->sens_nb, "textures/buttons/sens_nb", 31, 31, 5);
+	load_multiple_images(game()->diff_nb, "textures/buttons/diff_nb", 131, 31, 3);
+	//mlx_destroy_image(game()->mlx, game()->diff_nb[1].img);
+	load_multiple_images(game()->continue_bt, "textures/buttons/continue_bt", 410, 78, 2);
+	load_multiple_images(game()->option_p_bt, "textures/buttons/option_p_bt", 410, 78, 2);
+	load_multiple_images(game()->quit_p_bt, "textures/buttons/quit_p_bt", 410, 78, 2);
+	load_multiple_images(game()->glitch.glitch, "textures/glitch/Glitch", 432, 432, 20);
+	load_multiple_images(game()->timer_nbr, "textures/numbers/", 31, 31, 10);
+}
 void init(void)
 {
 	t_data temp;
@@ -197,54 +242,10 @@ void init(void)
 			&game()->minimap.endian);
 	game()->minimap.res_x = 192;
 	game()->minimap.res_y = 192;
-	load_full_img(&game()->circle, "textures/circle.xpm");
 	game()->frame.sens_tg = 0;
 	game()->frame.diff_tg = 0;
-	load_full_img(&game()->map.north, game()->map.info[0]);
-	load_full_img(&game()->map.south, game()->map.info[1]);
-	load_full_img(&game()->map.east, game()->map.info[2]);
-	load_full_img(&game()->map.west, game()->map.info[3]);
-	load_full_img(&game()->wall, "textures/1.xpm");
-	load_full_img(&game()->floor, "textures/2.xpm");
-	load_full_img(&game()->person, "textures/3.xpm");
-	load_full_img(&game()->maze_nm, "textures/buttons/maze_nm.xpm");
-	load_full_img(&game()->ctrl_menu, "textures/buttons/ctrl_menu.xpm");
-	load_full_img(&game()->diff_bt, "textures/buttons/diff_bt.xpm");
-	load_full_img(&game()->sens_bt, "textures/buttons/sens_bt.xpm");
-	
-	load_full_img(&game()->g_over, "textures/lose/gover_bg.xpm");
-	load_full_img(&game()->diff_nb[1], "textures/buttons/diff_nb1.xpm");
-	
-	load_full_img(&game()->pause_bt, "textures/buttons/pause_bt.xpm");
-	
-	load_full_img(&game()->exit, "textures/exit/Exit1.xpm");
-
-	load_full_img(&game()->closed_door, "textures/doorC.xpm");
-	load_full_img(&game()->open_door, "textures/doorO.xpm");
-	load_full_img(&game()->timer, "textures/neon_hud.xpm");
-	load_full_img(&game()->g_win_bg, "textures/win/win_victory.xpm");
-	load_multiple_images(game()->star, "textures/stars/star", 122, 522, 4);
-	load_multiple_images(game()->return_menu_bt, "textures/buttons/return_menu_bt", 412, 79, 2);
-	load_multiple_images(game()->door, "textures/door/Porta", 432, 432, 56);
-	load_multiple_images(game()->restart_bt, "textures/buttons/restart_bt", 412, 79, 2);
-	load_multiple_images(game()->play_bt, "textures/buttons/play_bt", 576, 116, 2);
-	load_multiple_images(game()->option_bt, "textures/buttons/option_bt", 576, 116, 2);
-	load_multiple_images(game()->quit_bt, "textures/buttons/quit_bt", 576, 116, 2);
-	load_multiple_images(game()->back_bt, "textures/buttons/back_bt", 855, 79, 2);
-	load_multiple_images(game()->ctrl_bt, "textures/buttons/ctrl_bt", 855, 80, 2);
-	load_multiple_images(game()->ctrlback_bt, "textures/buttons/ctrlback_bt", 1195, 79, 2);
-	load_multiple_images(game()->left_bt, "textures/buttons/left_bt", 30, 34, 2);
-	load_multiple_images(game()->right_bt, "textures/buttons/right_bt", 30, 34, 2);
-	load_multiple_images(game()->sens_nb, "textures/buttons/sens_nb", 31, 31, 5);
-	load_multiple_images(game()->diff_nb, "textures/buttons/diff_nb", 131, 31, 3);
-	mlx_destroy_image(game()->mlx, game()->diff_nb[1].img);
-	load_multiple_images(game()->continue_bt, "textures/buttons/continue_bt", 410, 78, 2);
-	load_multiple_images(game()->option_p_bt, "textures/buttons/option_p_bt", 410, 78, 2);
-	load_multiple_images(game()->quit_p_bt, "textures/buttons/quit_p_bt", 410, 78, 2);
-	load_multiple_images(game()->glitch.glitch, "textures/glitch/Glitch", 432, 432, 20);
-	load_multiple_images(game()->timer_nbr, "textures/numbers/", 31, 31, 10);
-
-	load_multiple_images(game()->g_win, "textures/win/win", 1920, 1080, 4);
+	load_images();
+	//load_full_img(&game()->diff_nb[1], "textures/buttons/diff_nb1.xpm");
 	game()->sleft_c[0].x = 1004;
 	game()->sleft_c[0].y = 501.5;
 	game()->sright_c[0].x = 1383; 
@@ -259,7 +260,7 @@ void init(void)
 	game()->sright_c[1].y = 484;
 	game()->dleft_c[1].x = 1035;
 	game()->dleft_c[1].y = 614;
-	game()->dright_c[1].x = 1353; 
+	game()->dright_c[1].x = 1353;
 	game()->dright_c[1].y = 614; 
 	game()->sleft_c[2].x = 1035;
 	game()->sleft_c[2].y = 519;
@@ -282,9 +283,6 @@ void init(void)
 	game()->sright_pause_c[2].x = 1337; 
 	game()->sright_pause_c[2].y = 570;
 	game()->release = 0;
-
-	
-	
 	init_vid();
 	game()->state = MENU;
 	game()->mouse.toggle_arrow = mlx_mouse_show(game()->mlx, game()->win); 

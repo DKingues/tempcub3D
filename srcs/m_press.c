@@ -224,6 +224,7 @@ void win_press(void)
 	mlx_mouse_get_pos(game()->mlx, game()->win, &game()->mouse.x, &game()->mouse.y);
 	if ((game()->mouse.y >= 666 && game()->mouse.x >= 754) && (game()->mouse.y <= 744 && game()->mouse.x <= 1165))
 	{
+		reset_map();
 		game()->state = MENU;
 	}
 	if ((game()->mouse.y >= 767 && game()->mouse.x >= 754) && (game()->mouse.y <= 844 && game()->mouse.x <= 1165))
@@ -245,7 +246,6 @@ void gover_press(void)
 		&game()->canvas.endian);
 		reinit();
 		ins_map();
-		ft_usleep(15000);
 		lighten(game()->canvas, 0.0);
 		game()->state = GAME;
 	}

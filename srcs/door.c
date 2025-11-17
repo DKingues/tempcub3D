@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 15:15:29 by dicosta-          #+#    #+#             */
-/*   Updated: 2025/11/07 17:03:41 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/11/17 16:40:26 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,41 @@ int open_door(void)
 	y = game()->player.player_y;
 	x = game()->player.player_x;
 	if (game()->map.map[y][x + 1] == 'L')
+	{
+		darken(game()->canvas, 1.0, -0.05);	
 		game()->state = G_WIN;
+	}
 	else if (game()->map.map[y][x - 1] == 'L')
+	{
+		darken(game()->canvas, 1.0, -0.05);
 		game()->state = G_WIN;
+	}
 	else if (game()->map.map[y + 1][x] == 'L')
+	{
+		darken(game()->canvas, 1.0, -0.05);
 		game()->state = G_WIN;
+	}
 	else if (game()->map.map[y - 1][x] == 'L')
+	{
+		darken(game()->canvas, 1.0, -0.05);
 		game()->state = G_WIN;
+	}
 	else if (game()->map.map[y][x + 1] == 'C')
-		game()->map.map[y][x + 1] = 'O';
+		game()->map.map[y][x + 1] = -57;
 	else if (game()->map.map[y][x - 1] == 'C')
-		game()->map.map[y][x - 1] = 'O';
+		game()->map.map[y][x - 1] = -57;
 	else if (game()->map.map[y + 1][x] == 'C')
-		game()->map.map[y + 1][x] = 'O';
+		game()->map.map[y + 1][x] = -57;
 	else if (game()->map.map[y - 1][x] == 'C')
-		game()->map.map[y - 1][x] = 'O';
+		game()->map.map[y - 1][x] = -57;
 	else if (game()->map.map[y][x + 1] == 'O')
-		game()->map.map[y][x + 1] = 'C';
+		game()->map.map[y][x + 1] = -71;
 	else if (game()->map.map[y][x - 1] == 'O')
-		game()->map.map[y][x - 1] = 'C';
+		game()->map.map[y][x - 1] = -71;
 	else if (game()->map.map[y + 1][x] == 'O')
-		game()->map.map[y + 1][x] = 'C';
+		game()->map.map[y + 1][x] = -71;
 	else if (game()->map.map[y - 1][x] == 'O')
-		game()->map.map[y - 1][x] = 'C';
+		game()->map.map[y - 1][x] = -71;
 	return (1);
 }
 
@@ -60,47 +72,46 @@ int int_size(long time)
 int timer(long start, int timer)
 {
 	struct timeval	curr;
-	long current;
 	int remaining;
 	
-	current = 0;
+	game()->time.elapsed_time = 0;
 	remaining = 0;
 	gettimeofday(&curr, NULL);
-	current = curr.tv_sec;
-	remaining = timer - (current - start);
-	game()->minutes = remaining / 60;
-	game()->seconds = remaining % 60;
+	game()->time.elapsed_time = curr.tv_sec;
+	remaining = timer - (game()->time.elapsed_time - start) + game()->time.pause_time;
+	game()->time.minutes = remaining / 60;
+	game()->time.seconds = remaining % 60;
 	return (0);
 }
 
 void	draw_time(void)
 {
-	if (int_size(game()->minutes) == 1 && game()->minutes != 0)
+	if (int_size(game()->time.minutes) == 1 && game()->time.minutes != 0)
 	{
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 875, 23, 1.0);
-		draw_img(&game()->timer_nbr[game()->minutes], &game()->canvas, 909, 23, 1.0);
+		draw_img(&game()->timer_nbr[game()->time.minutes], &game()->canvas, 909, 23, 1.0);
 	}
-	else if (int_size(game()->minutes) == 2)
+	else if (int_size(game()->time.minutes) == 2)
 	{
-		draw_img(&game()->timer_nbr[game()->minutes / 10], &game()->canvas, 875, 23, 1.0);
-		draw_img(&game()->timer_nbr[game()->minutes % 10], &game()->canvas, 909, 23, 1.0);
+		draw_img(&game()->timer_nbr[game()->time.minutes / 10], &game()->canvas, 875, 23, 1.0);
+		draw_img(&game()->timer_nbr[game()->time.minutes % 10], &game()->canvas, 909, 23, 1.0);
 	}
-	else if (game()->minutes == 0)
+	else if (game()->time.minutes == 0)
 	{
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 875, 23, 1.0);
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 909, 23, 1.0);
 	}
-	if (int_size(game()->seconds) == 1 && game()->seconds != 0)
+	if (int_size(game()->time.seconds) == 1 && game()->time.seconds != 0)
 	{
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 980 , 23, 1.0);
-		draw_img(&game()->timer_nbr[game()->seconds], &game()->canvas, 1017, 23, 1.0);
+		draw_img(&game()->timer_nbr[game()->time.seconds], &game()->canvas, 1017, 23, 1.0);
 	}
-	else if (int_size(game()->seconds) == 2 && game()->seconds != 0 )
+	else if (int_size(game()->time.seconds) == 2 && game()->time.seconds != 0 )
 	{
-		draw_img(&game()->timer_nbr[game()->seconds / 10], &game()->canvas, 980, 23, 1.0);
-		draw_img(&game()->timer_nbr[game()->seconds % 10], &game()->canvas, 1017, 23, 1.0);
+		draw_img(&game()->timer_nbr[game()->time.seconds / 10], &game()->canvas, 980, 23, 1.0);
+		draw_img(&game()->timer_nbr[game()->time.seconds % 10], &game()->canvas, 1017, 23, 1.0);
 	}
-	else if (game()->seconds == 0)
+	else if (game()->time.seconds == 0)
 	{
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 980, 23, 1.0);
 		draw_img(&game()->timer_nbr[0], &game()->canvas, 1017, 23, 1.0);

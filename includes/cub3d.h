@@ -28,6 +28,7 @@
 
 typedef	struct s_frame
 {
+	int			door_tg;
 	int			glitch_tg;
 	int			restart_tg;
 	int			return_menu_tg;
@@ -47,6 +48,7 @@ typedef	struct s_frame
 	int			dleft_tg;
 	int			dright_tg;
 	int 		anim_tg;
+	int			star_tg;
 }				t_frame;
 
 typedef	struct s_cord
@@ -142,6 +144,16 @@ typedef	struct	s_glitch
 	int		to_glitch;
 }				t_glitch;
 
+typedef struct s_time
+{
+	long		level_start;
+	long		elapsed_time;
+	long		pause_time;
+	long		pause_time_start;
+	int			minutes;
+	int			seconds;
+	int			level_time;
+}				t_time;
 
 typedef struct s_game
 {
@@ -151,21 +163,17 @@ typedef struct s_game
 	t_data	circle;
 	t_data	rays;
 	int offset;
-	int			game_over;
-	long		game_start;
-	int			minutes;
-	int			seconds;
-	int			time;
+	t_time		time;
 	int 		release;
 	void		*mlx;
 	void		*win;
-	t_data 		frcg;
-	t_frame		frame;
-	t_state		state;
 	t_data		g_over;
 	t_data		g_win[4];
 	t_data		star[4];
 	t_data		g_win_bg;
+	t_data 		frcg;
+	t_frame		frame;
+	t_state		state;
 	t_data		canvas;
 	t_data		wall;
 	t_data		floor;
@@ -183,7 +191,6 @@ typedef struct s_game
 	t_data		maze_nm;
 	t_data		ctrl_menu;
 	t_data		*st_anim;
-	t_data		*st_anim_dim;
 	t_data		play_bt[2];
 	t_data		option_bt[2];
 	t_data		option_p_bt[2];
@@ -216,6 +223,7 @@ typedef struct s_game
 void	*my_mlx_new_window(t_xvar *xvar,int size_x,int size_y,char *title);
 void	draw_fc(void);
 void	my_mlx_pixel_put2(t_data *data, int x, int y, int color);
+void	door_handle(void);
 //GNL
 # define BUFFER_SIZE 1
 # define PI 3.141592653589793
@@ -295,7 +303,7 @@ int	dim_clr(unsigned int color, float factor);
 void gameplay(void);
 
 //m_press.c
-int		mouse_press(int keycode, void *nada);
+int	mouse_press(int keycode, void *nada);
 void	main_press(void);
 void	opt_m_press(void);
 void	ctrl_m_press(void);
@@ -304,9 +312,9 @@ void	opt_p_press(void);
 void	ctrl_p_press(void);
 void	win_press(void);
 void	gover_press(void);
-int		pause_game(void);
 void	opt_g_press(void);
 void	ctrl_g_press(void);
+int		pause_game(void);
 
 //m_move.c
 int	mouse_move(int keycode, t_game *null);
@@ -318,10 +326,9 @@ void	opt_p_move(void);
 void	ctrl_p_move(void);
 void	win_move(void);
 void	gover_move(void);
-void	game_move(int *last_x);
 void	opt_g_move(void);
 void	ctrl_g_move(void);
-
+void	game_move(int *last_x);
 
 //keys.c
 int	key_press(int keycode, t_game *nada);
@@ -334,13 +341,13 @@ void	game_loop(int change);
 int	menu_put(int keycode, void *nada);
 void opt_m_put(void);
 void ctrl_m_put(void);
-int	pause_put(void);
 void opt_p_put(void);
 void ctrl_p_put(void);
 void g_win_put(void);
 void g_over_put(void);
 void opt_g_put(void);
 void ctrl_g_put(void);
+int	pause_put(void);
 
 //anim_utils.c
 void	draw_dim_img(t_data *src, t_data *dst, int x, int y, float factor);
@@ -362,5 +369,13 @@ char	**copy_map(char **new_map, char **map_to_copy);
 void	set_difficulty(void);
 
 int	count_zero_r(char **map, int y, int x);
+
+//movements.c
+
+void	w_move(int change);
+void	a_move(int change);
+void	s_move(int change);
+void	d_move(int change);
+int		check_radius(char keycode, int change);
 
 # endif

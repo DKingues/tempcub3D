@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 16:10:20 by dicosta-          #+#    #+#             */
-/*   Updated: 2025/11/05 18:26:43 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/11/15 16:18:59 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@ long get_elapsed_sec(void)
 {
 	struct timeval current;
 
-	gettimeofday(&current, NULL);
-	return (current.tv_sec - game()->game_start);
+	if (gettimeofday(&current, NULL))
+		return (0);
+	return (current.tv_sec - game()->time.level_start);
 }
 
 long	get_time(void)

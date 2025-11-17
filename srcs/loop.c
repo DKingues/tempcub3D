@@ -6,7 +6,7 @@
 /*   By: dicosta- <dicosta-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 17:37:00 by rmota-ma          #+#    #+#             */
-/*   Updated: 2025/11/07 19:01:36 by dicosta-         ###   ########.fr       */
+/*   Updated: 2025/11/15 19:00:37 by dicosta-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 int	loop(void *nada)
 {
 	struct timeval	start;
+	long   paused_for;
 	(void)nada;
+
 	if(game()->state == MENU)
 		menu_put(0, NULL);
 	else if(game()->state == OPT_M)
@@ -23,17 +25,31 @@ int	loop(void *nada)
 	else if(game()->state == CTRL_M)
 		ctrl_m_put();
 	else if(game()->state == PAUSE)
+	{
+		if (game()->time.pause_time_start == -1)
+		{	
+			gettimeofday(&start, NULL);
+			game()->time.pause_time_start = start.tv_sec;
+		}
 		pause_put();
+	}
 	else if (game()->state == OPT_P)
 		opt_p_put();
 	else if (game()->state == CTRL_P)
 		ctrl_p_put();
-	if(game()->state == GAME)
+	else if (game()->state == GAME)
 	{
-		if (game()->game_start == -1)
+		if (game()->time.level_start == -1)
 		{
 			gettimeofday(&start, NULL);
-			game()->game_start = start.tv_sec;
+			game()->time.level_start = start.tv_sec;
+		}
+		if (game()->time.pause_time_start != -1)
+		{
+			gettimeofday(&start, NULL);
+			paused_for = start.tv_sec - game()->time.pause_time_start;
+			game()->time.pause_time += paused_for;
+			game()->time.pause_time_start = -1;
 		}
 		game_loop(18);
 	}
@@ -48,73 +64,22 @@ int	loop(void *nada)
 	return (0);
 }
 
-void w_move(int change)
+int game_over_check(void)
 {
-	double	posX;
-	double	posY;
-
-	posX = game()->player.player_x + (game()->raycast.ray_x / ((change / 2)));
-	posY = game()->player.player_y + (game()->raycast.ray_y / ((change / 2)));
-	if (game()->map.map[(int)(posY)][(int)posX] != '1' && game()->map.map[(int)(posY)][(int)posX] != 'C' && game()->map.map[(int)(posY)][(int)posX] != 'L')
+	if (game()->map.map[(int)game()->player.player_y][(int)game()->player.player_x] == 'G' || (game()->time.minutes == 0 && game()->time.seconds == 0))
 	{
-		game()->player.player_x = game()->player.player_x + (game()->raycast.ray_x / change);
-		game()->player.player_y = game()->player.player_y + (game()->raycast.ray_y / change);
-	}
-}
-
-void a_move(int change)
-{
-	double	posX;
-	double	posY;
-
-	posX = game()->player.player_x + ((game()->raycast.ray_y) / ((change / 2)));
-	posY = game()->player.player_y + ((game()->raycast.ray_x * -1) / ((change / 2)));
-	if (game()->map.map[(int)(posY)][(int)posX] != '1' && game()->map.map[(int)(posY)][(int)posX] != 'C' && game()->map.map[(int)(posY)][(int)posX] != 'L')
-	{
-		game()->player.player_x = game()->player.player_x + ((game()->raycast.ray_y) / change);
-		game()->player.player_y = game()->player.player_y + ((game()->raycast.ray_x * -1) / change);
-	}
-}
-
-void s_move(int change)
-{
-	double	posX;
-	double	posY;
-
-	posX = game()->player.player_x + ((game()->raycast.ray_x * -1) / ((change / 2)));
-	posY = game()->player.player_y + ((game()->raycast.ray_y * -1) / ((change / 2)));
-	if (game()->map.map[(int)(posY)][(int)posX] != '1' && game()->map.map[(int)(posY)][(int)posX] != 'C' && game()->map.map[(int)(posY)][(int)posX] != 'L')
-	{
-		game()->player.player_x = game()->player.player_x + ((game()->raycast.ray_x * -1) / change);
-		game()->player.player_y = game()->player.player_y + ((game()->raycast.ray_y * -1) / change);
-	}
-}
-
-void d_move(int change)
-{
-	double	posX;
-	double	posY;
-
-	posX = game()->player.player_x + ((game()->raycast.ray_y * -1) / ((change / 2)));
-	posY = game()->player.player_y + ((game()->raycast.ray_x) / ((change / 2)));
-	if (game()->map.map[(int)(posY)][(int)posX] != '1' && game()->map.map[(int)(posY)][(int)posX] != 'C' && game()->map.map[(int)(posY)][(int)posX] != 'L')
-	{
-		game()->player.player_x = game()->player.player_x + ((game()->raycast.ray_y * -1) / change);
-		game()->player.player_y = game()->player.player_y + ((game()->raycast.ray_x) / change);
-	}
-}
-
-void game_over_check(void)
-{
-	if (game()->map.map[(int)game()->player.player_y][(int)game()->player.player_x] == 'G' || (game()->minutes == 0 && game()->seconds == 0))
+		darken(game()->canvas, 1.0, -0.05);
+		lighten(game()->st_anim[game()->frame.anim_tg], 0.0);
 		game()->state = G_OVER;
+		return (1);
+	}
+	return (0);
 }
 
 void	game_loop(int change)
 {
-	timer(game()->game_start, game()->time);
+	timer(game()->time.level_start, game()->time.level_time);
 	glitch_consume(4);
-	game_over_check();
 	if(game()->player.sprint_count == 0)
 		game()->offset = 5;
 	else if (game()->player.sprint_count == 5)
@@ -124,7 +89,8 @@ void	game_loop(int change)
 		game()->player.sprint_count -= 1;
 		change = 9;
 	}
-	else if(game()->player.sprint_count < 100)
+	else
+		if(game()->player.sprint_count < 100)
 			game()->player.sprint_count += 0.25;
 	if (game()->player.moving_d == 1)
 		d_move(change);
@@ -138,9 +104,11 @@ void	game_loop(int change)
 		rotate_ray(-1);
 	if(game()->player.rot_r == 1)
 		rotate_ray(1);
+	door_handle();
 	ins_map();
 	//ft_usleep(13000);
-	mlx_put_image_to_window(game()->mlx, game()->win, game()->canvas.img, 0, 0);
+	if(!game_over_check())
+		mlx_put_image_to_window(game()->mlx, game()->win, game()->canvas.img, 0, 0);
 }
 
 int	menu_put(int keycode, void *nada)
@@ -277,23 +245,24 @@ void ctrl_p_put(void)
 void g_win_put(void)
 {
 	t_data temp;
-
+	int	star = floor(game()->frame.star_tg /10);
 	if(game()->frame.anim_tg == 167)
 		game()->frame.anim_tg = 0;
 	temp.img = mlx_new_image(game()->mlx, 1920, 1080);
 	temp.addr = mlx_get_data_addr(temp.img,
 		&temp.bits_per_pixel, &temp.line_length,
 		&temp.endian);
-	draw_img(&game()->canvas, &temp, 0, 0, 0.4);
 	draw_img(&game()->st_anim[game()->frame.anim_tg], &temp, 0, 0, 1.0);
 	draw_img(&game()->g_win_bg, &temp, 0, 0, 1.0);
-	draw_img(&game()->star[0], &temp, 701, 441, 1.0);
+	draw_img(&game()->star[star], &temp, 701, 441, 1.0);
 	draw_img(&game()->return_menu_bt[game()->frame.return_menu_tg], &temp, 755, 666, 1.0);
 	draw_img(&game()->quit_p_bt[game()->frame.quit_p_tg], &temp, 755, 766, 1.0);
 	game()->frame.anim_tg++;
-	ft_usleep(15000);
 	mlx_put_image_to_window(game()->mlx, game()->win, temp.img, 0, 0);
+	ft_usleep(15000);
 	mlx_destroy_image(game()->mlx, temp.img);
+	if(game()->frame.star_tg <( game()->frame.diff_tg + 1) * 10)
+		game()->frame.star_tg++;
 }
 
 void g_over_put(void)
@@ -306,7 +275,6 @@ void g_over_put(void)
 	temp.addr = mlx_get_data_addr(temp.img,
 		&temp.bits_per_pixel, &temp.line_length,
 		&temp.endian);
-	draw_img(&game()->canvas, &temp, 0, 0, 0.4);
 	draw_img(&game()->st_anim[game()->frame.anim_tg], &temp, 0, 0, 1.0);
 	draw_img(&game()->g_over, &temp, 0, 0, 1.0);
 	draw_img(&game()->restart_bt[game()->frame.restart_tg], &temp, 754, 464, 1.0);
@@ -314,8 +282,8 @@ void g_over_put(void)
 	draw_img(&game()->return_menu_bt[game()->frame.return_menu_tg], &temp, 754, 664, 1.0);
 	draw_img(&game()->quit_p_bt[game()->frame.quit_p_tg], &temp, 754, 764, 1.0);
 	game()->frame.anim_tg++;
-	ft_usleep(15000);
 	mlx_put_image_to_window(game()->mlx, game()->win, temp.img, 0, 0);	
+	ft_usleep(15000);
 	mlx_destroy_image(game()->mlx, temp.img);
 }
 
@@ -370,5 +338,3 @@ void ctrl_g_put(void)
 	ft_usleep(15000);
 	mlx_destroy_image(game()->mlx, temp.img);
 }
-
-

@@ -168,6 +168,34 @@ void	ctrl_p_move(void)
 		game()->frame.ctrlback_tg = 0;
 }
 
+void	game_move(int *last_x)
+{
+	mlx_mouse_get_pos(game()->mlx, game()->win, &game()->mouse.x, &game()->mouse.y);
+	int sens;
+
+	sens = (80 / (game()->frame.sens_tg + 1));
+	if(game()->mouse.y >= 1000)
+		mlx_mouse_move(game()->mlx, game()->win, game()->mouse.x, 90);
+	if(game()->mouse.y <= 80)
+		mlx_mouse_move(game()->mlx, game()->win, game()->mouse.x, 990);
+	if(game()->mouse.x <= 80)
+	{
+		mlx_mouse_move(game()->mlx, game()->win, 1830, game()->mouse.y);
+		game()->mouse.x = 1830;
+		*last_x = 1860;
+	}
+	if(game()->mouse.x >= 1840)
+	{
+		mlx_mouse_move(game()->mlx, game()->win, 90, game()->mouse.y);
+		game()->mouse.x = 90;
+		*last_x = 60;
+	}
+	if (game()->mouse.x > *last_x)
+		rotate_ray((1 + (game()->mouse.x - *last_x)) / sens);
+	if (game()->mouse.x < *last_x)
+		rotate_ray((-1 - (*last_x - game()->mouse.x)) / sens);
+}
+
 void	win_move(void)
 {
 	mlx_mouse_get_pos(game()->mlx, game()->win, &game()->mouse.x, &game()->mouse.y);
@@ -201,33 +229,6 @@ void	gover_move(void)
 	else
 		game()->frame.quit_p_tg = 0;
 	
-}
-void	game_move(int *last_x)
-{
-	mlx_mouse_get_pos(game()->mlx, game()->win, &game()->mouse.x, &game()->mouse.y);
-	int sens;
-
-	sens = (80 / (game()->frame.sens_tg + 1));
-	if(game()->mouse.y >= 1000)
-		mlx_mouse_move(game()->mlx, game()->win, game()->mouse.x, 90);
-	if(game()->mouse.y <= 80)
-		mlx_mouse_move(game()->mlx, game()->win, game()->mouse.x, 990);
-	if(game()->mouse.x <= 80)
-	{
-		mlx_mouse_move(game()->mlx, game()->win, 1830, game()->mouse.y);
-		game()->mouse.x = 1830;
-		*last_x = 1860;
-	}
-	if(game()->mouse.x >= 1840)
-	{
-		mlx_mouse_move(game()->mlx, game()->win, 90, game()->mouse.y);
-		game()->mouse.x = 90;
-		*last_x = 60;
-	}
-	if (game()->mouse.x > *last_x)
-		rotate_ray((1 + (game()->mouse.x - *last_x)) / sens);
-	if (game()->mouse.x < *last_x)
-		rotate_ray((-1 - (*last_x - game()->mouse.x)) / sens);
 }
 
 void	opt_g_move(void)
@@ -274,4 +275,3 @@ void	ctrl_g_move(void)
 	else
 		game()->frame.ctrlback_tg = 0;
 }
-
